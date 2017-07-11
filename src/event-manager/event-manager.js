@@ -91,7 +91,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _calculateElementPreset: function (elem) {
-            // !
+            // Получаем смещение элемента #holder относительно левого верхнего угла страницы
             var result = {
                 x: 0,
                 y: 0
@@ -101,6 +101,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 result.y += elem.offsetTop;
                 elem = elem.offsetParent;
             }
+
             return result;
         }
     });
