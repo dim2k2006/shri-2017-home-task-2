@@ -76,12 +76,16 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _wheelEventHandler: function(event) {
             event.preventDefault();
 
-            var delta = event.deltaY;
-            var scale = delta > 0 ? +0.01 : -0.01;
+            var scaleDirection = event.deltaY > 0 ? 'up' : 'down';
+            var elemOffset = this._calculateElementOffset(this._elem);
 
             this._callback({
                 type: EVENTS[event.type],
-                scale: scale
+                targetPoint: {
+                    x: event.clientX - elemOffset.x,
+                    y: event.clientY - elemOffset.y
+                },
+                scaleDirection: scaleDirection
             });
         },
 
