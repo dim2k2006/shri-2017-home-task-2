@@ -53,6 +53,8 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
+            // Такая подписка нужна в целях оптимизации производительности
+            // Например, если будет 100 элементов imageViewer, то они все будут слушать событие mousemove, в случае использования метода с флагом
             if (event.type === 'mousedown') {
                 this._addEventListeners('mousemove mouseup', document.documentElement, this._mouseListener);
             } else if (event.type === 'mouseup') {
@@ -74,7 +76,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             event.preventDefault();
 
             var delta = event.deltaY;
-            var scale = delta > 0 ? +0.05 : -0.05;
+            var scale = delta > 0 ? +0.01 : -0.01;
 
             this._callback({
                 type: EVENTS[event.type],

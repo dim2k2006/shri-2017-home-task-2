@@ -55,8 +55,16 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processWheel: function(event) {
-            console.log('Process Wheel');
-            console.log(event);
+            var state = this._view.getState();
+
+            state.scale += event.scale;
+
+            this._view.setState({
+                scale: state.scale
+            });
+            // console.log('Process Wheel');
+            // console.log(event);
+            // console.log(state);
         }
     });
 
