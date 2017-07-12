@@ -1,4 +1,4 @@
-# Мастер-класс "Сенсорные события". Мобилизация 2017
+# Воркшоп "Сенсорные события". Мобилизация 2017
 
 Для запуска мастер класс необходимо операционная система на базе unix или windows 10 с последним обновлением (Creators Update) с включенным "Bash Ubuntu for Windows" [Подробнее](https://www.windowscentral.com/how-install-bash-shell-command-line-windows-10)
 
@@ -38,3 +38,4 @@ npm run watch
 - Pointer Events на caniuse http://caniuse.com/#search=pointer
 - Pointer Events работает из коробки в Edge/IE11 и Google Chrome (Window, Mac, Android)
 - Виртуальную машину с образами Windows с Edge/IE можно скачать - https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
+- Для отладки нескольких PointerEvent событий в Chrome под Mac можно попробовать использовать эту мелкую библиотеку https://github.com/vsesh/mouseToMultiPointer

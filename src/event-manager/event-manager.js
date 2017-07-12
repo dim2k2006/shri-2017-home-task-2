@@ -61,14 +61,15 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 this._removeEventListeners('mousemove mouseup', document.documentElement, this._mouseListener);
             }
 
-            var elemOffset = this._calculateElementPreset(this._elem);
+            var elemOffset = this._calculateElementOffset(this._elem);
 
             this._callback({
                 type: EVENTS[event.type],
                 targetPoint: {
-                    x: event.pageX - elemOffset.x,
-                    y: event.pageY - elemOffset.y
-                }
+                    x: event.clientX - elemOffset.x,
+                    y: event.clientY - elemOffset.y
+                },
+                distance: 1
             });
         },
 
@@ -85,7 +86,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _touchEventHandler: function (event) {
-            // Отменяем стандартное поведение (последующие события мышки)
             event.preventDefault();
 
             var touches = event.touches;
@@ -94,32 +94,52 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 touches = event.changedTouches;
             }
 
-            var elemOffset = this._calculateElementPreset(this._elem);
+            var targetPoint;
+            var distance = 1;
+            var elemOffset = this._calculateElementOffset(this._elem);
 
-            var targetPoint = {
-                x: touches[0].pageX - elemOffset.x,
-                y: touches[0].pageY - elemOffset.y
-            };
+            if (touches.length === 1) {
+                targetPoint = {
+                    x: touches[0].clientX,
+                    y: touches[0].clientY
+                };
+            } else {
+                var firstTouch = touches[0];
+                var secondTouch = touches[1];
+                targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
+                distance = this._calculateDistance(firstTouch, secondTouch);
+            }
+
+            targetPoint.x -= elemOffset.x;
+            targetPoint.y -= elemOffset.y;
 
             this._callback({
                 type: EVENTS[event.type],
-                targetPoint: targetPoint
+                targetPoint: targetPoint,
+                distance: distance
             });
         },
 
-        _calculateElementPreset: function (elem) {
-            // Получаем смещение элемента #holder относительно левого верхнего угла страницы
-            var result = {
-                x: 0,
-                y: 0
+        _calculateTargetPoint: function (firstTouch, secondTouch) {
+            return {
+                x: (secondTouch.clientX + firstTouch.clientX) / 2,
+                y: (secondTouch.clientY + firstTouch.clientY) / 2
             };
-            while (elem) {
-                result.x += elem.offsetLeft;
-                result.y += elem.offsetTop;
-                elem = elem.offsetParent;
-            }
+        },
 
-            return result;
+        _calculateDistance: function (firstTouch, secondTouch) {
+            return Math.sqrt(
+                Math.pow(secondTouch.clientX - firstTouch.clientX, 2) +
+                Math.pow(secondTouch.clientY - firstTouch.clientY, 2)
+            );
+        },
+
+        _calculateElementOffset: function (elem) {
+            var bounds = elem.getBoundingClientRect();
+            return {
+                x: bounds.left,
+                y: bounds.top
+            };
         }
     });
 
