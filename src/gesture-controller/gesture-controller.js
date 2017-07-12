@@ -40,6 +40,11 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
                 this._initState = this._view.getState();
                 this._initEvent = event;
             }
+
+            // wheel
+            if (event.type === 'wheel') {
+                this._processWheel(event);
+            }
         },
 
         _processDrag: function (event) {
@@ -47,6 +52,11 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
                 positionX: this._initState.positionX + (event.targetPoint.x - this._initEvent.targetPoint.x),
                 positionY: this._initState.positionY + (event.targetPoint.y - this._initEvent.targetPoint.y)
             });
+        },
+
+        _processWheel: function(event) {
+            console.log('Process Wheel');
+            console.log(event);
         }
     });
 
