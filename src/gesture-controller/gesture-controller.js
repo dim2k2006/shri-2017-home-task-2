@@ -4,7 +4,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
 
     var OPTIONS = {
         DBL_TAB_STEP: 0.2,
-        SCALE_MAX: 5,
+        SCALE_MAX: 2.5,
         SCALE_MIN: 0.04,
         SCALE_STEP: 0.01
     };
@@ -69,9 +69,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
 
             state.scale += event.scaleDirection === 'up' ? OPTIONS.SCALE_STEP : OPTIONS.SCALE_STEP * (-1);
 
-            state.scale = Math.min(OPTIONS.SCALE_MAX, state.scale);
-            state.scale = Math.max(OPTIONS.SCALE_MIN, state.scale);
-
             this._scale(
                 event.targetPoint,
                 state.scale
@@ -96,6 +93,9 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         _scale: function (targetPoint, newScale) {
             var imageSize = this._view.getImageSize();
             var state = this._view.getState();
+            // Ограничение зумирования
+            newScale = Math.min(OPTIONS.SCALE_MAX, newScale);
+            newScale = Math.max(OPTIONS.SCALE_MIN, newScale);
             // Позиция прикосновения на изображении на текущем уровне масштаба
             var originX = targetPoint.x - state.positionX;
             var originY = targetPoint.y - state.positionY;
