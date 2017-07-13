@@ -67,7 +67,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         _processWheel: function(event) {
             var state = this._view.getState();
 
-            state.scale += event.scaleDirection === 'up' ? OPTIONS.SCALE_STEP : OPTIONS.SCALE_STEP * (-1);
+            state.scale += event.scaleDirection > 0 ? OPTIONS.SCALE_STEP : OPTIONS.SCALE_STEP * (-1);
 
             this._scale(
                 event.targetPoint,

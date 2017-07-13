@@ -76,7 +76,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _wheelEventHandler: function(event) {
             event.preventDefault();
 
-            var scaleDirection = event.deltaY > 0 ? 'up' : 'down';
             var elemOffset = this._calculateElementOffset(this._elem);
 
             this._callback({
@@ -85,7 +84,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                     x: event.clientX - elemOffset.x,
                     y: event.clientY - elemOffset.y
                 },
-                scaleDirection: scaleDirection
+                scaleDirection: event.deltaY
             });
         },
 
