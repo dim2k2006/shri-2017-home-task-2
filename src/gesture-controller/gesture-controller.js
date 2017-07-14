@@ -40,6 +40,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
                 return;
             }
 
+            // multi touch & drag
             if (event.type === 'move') {
                 if (event.distance > 1 && event.distance !== this._initEvent.distance) {
                     this._processMultitouch(event);
