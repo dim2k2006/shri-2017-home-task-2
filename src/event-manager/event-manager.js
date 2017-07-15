@@ -164,53 +164,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             simulatedEvent.distance = distance;       // custom property distance
 
             this._elem.dispatchEvent(simulatedEvent);
-
-            // console.log('touch');
-
-            // var touches = event.touches;
-            //
-            // var newEvent = new MouseEvent(_EVENTS[event.type.replace('touch', '')], {
-            //     bubbles: true,
-            //     cancelable: true,
-            //     clientX: touches[0].clientX,
-            //     clientY: touches[0].clientY
-            // });
-
-            // console.log(newEvent);
-
-            // this._elem.dispatchEvent(newEvent);
-
-            // var touches = event.touches;
-
-            // touchend/touchcancel
-            // if (touches.length === 0) {
-            //     touches = event.changedTouches;
-            // }
-            //
-            // var targetPoint;
-            // var distance = 1;
-            // var elemOffset = this._calculateElementOffset(this._elem);
-            //
-            // if (touches.length === 1) {
-            //     targetPoint = {
-            //         x: touches[0].clientX,
-            //         y: touches[0].clientY
-            //     };
-            // } else {
-            //     var firstTouch = touches[0];
-            //     var secondTouch = touches[1];
-            //     targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
-            //     distance = this._calculateDistance(firstTouch, secondTouch);
-            // }
-            //
-            // targetPoint.x -= elemOffset.x;
-            // targetPoint.y -= elemOffset.y;
-            //
-            // this._callback({
-            //     type: EVENTS[event.type],
-            //     targetPoint: targetPoint,
-            //     distance: distance
-            // });
         },
 
         _calculateTargetPoint: function (firstTouch, secondTouch) {
