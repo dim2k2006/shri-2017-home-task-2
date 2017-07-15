@@ -5,6 +5,10 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         mousedown: 'start',
         mousemove: 'move',
         mouseup: 'end',
+        pointerdown: 'start',
+        pointermove: 'move',
+        pointerup: 'end',
+        pointercancel: 'end',
         touchstart: 'start',
         touchmove: 'move',
         touchend: 'end',
@@ -16,8 +20,11 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         start: 'mousedown',
         move: 'mousemove',
         end: 'mouseup',
-        cancel: 'mouseup'
+        cancel: 'mouseup',
+        up: 'mouseup'
     };
+
+    var eventCache = [];
 
     function EventManager(elem, callback) {
         this._elem = elem;
@@ -32,11 +39,13 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
         _setupListeners: function () {
             this._mouseListener = this._mouseEventHandler.bind(this);
-            this._wheelListener = this._wheelEventHandler.bind(this);
+            this._pointerListener = this._pointerEventHandler.bind(this);
             this._touchListener = this._touchEventHandler.bind(this);
+            this._wheelListener = this._wheelEventHandler.bind(this);
             this._addEventListeners('mousedown', this._elem, this._mouseListener);
-            this._addEventListeners('wheel', this._elem, this._wheelListener);
+            this._addEventListeners('pointerdown', this._elem, this._pointerListener);
             this._addEventListeners('touchstart touchmove touchend touchcancel', this._elem, this._touchListener);
+            this._addEventListeners('wheel', this._elem, this._wheelListener);
         },
 
         _teardownListeners: function () {
@@ -60,7 +69,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
-            console.log(event);
+            // console.log(event);
 
             // Такая подписка нужна в целях оптимизации производительности
             // Например, если будет 100 элементов imageViewer, то они все будут слушать событие mousemove, в случае использования метода с флагом
@@ -81,19 +90,98 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             });
         },
 
-        _wheelEventHandler: function(event) {
-            event.preventDefault();
+        _pointerEventHandler: function(event) {
+            // Добавим событие в коллекцию и добавим обработку событий pointermove pointerup pointercancel
+            if (event.type === 'pointerdown') {
 
+                // console.group('event type:', event.type);
+                // console.log('eventCache length: ', eventCache.length);
+                // console.groupEnd();
+
+                this._pushEvent(event);
+                this._addEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
+
+            // Обновим коллекцию
+            } else if (event.type === 'pointermove') {
+
+                // console.group('event type:',event.type);
+                // console.log('eventCache length: ', eventCache.length);
+                // console.groupEnd();
+
+                this._updateEvent(event);
+
+            }
+
+            var targetPoint;
+            var distance = 1;
+            var screenX = 0;
+            var screenY = 0;
+            var clientX = 0;
+            var clientY = 0;
             var elemOffset = this._calculateElementOffset(this._elem);
 
-            this._callback({
-                type: EVENTS[event.type],
-                targetPoint: {
-                    x: event.clientX - elemOffset.x,
-                    y: event.clientY - elemOffset.y
-                },
-                scaleDirection: event.deltaY
-            });
+            if (eventCache.length === 1) {
+
+                targetPoint = {
+                    x: eventCache[0].clientX,
+                    y: eventCache[0].clientY
+                };
+
+                screenX = eventCache[0].screenX;
+                screenY = eventCache[0].screenY;
+
+                clientX = eventCache[0].clientX;
+                clientY = eventCache[0].clientY;
+
+            } else {
+
+                var firstTouch = eventCache[0];
+                var secondTouch = eventCache[1];
+                targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
+                distance = this._calculateDistance(firstTouch, secondTouch);
+
+            }
+
+            targetPoint.x -= elemOffset.x;
+            targetPoint.y -= elemOffset.y;
+
+            var simulatedEvent = document.createEvent('MouseEvents');
+            var simulatedType = _EVENTS[event.type.replace('pointer', '')];
+
+            simulatedEvent.initMouseEvent(
+                simulatedType,    // type
+                true,             // bubbles
+                true,             // cancelable
+                window,           // view
+                1,                // detail
+                screenX,          // screenX
+                screenY,          // screenY
+                clientX,          // clientX
+                clientY,          // clientY
+                false,            // ctrlKey
+                false,            // altKey
+                false,            // shiftKey
+                false,            // metaKey
+                0,                // button
+                null              // relatedTarget,
+            );
+
+            simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
+            simulatedEvent.distance = distance;       // custom property distance
+
+            this._elem.dispatchEvent(simulatedEvent);
+
+            // Удалим событие из коллекции удалим подписку на события pointermove pointerup pointercancel
+            if (event.type === 'pointerup' || event.type === 'pointercancel') {
+
+                // console.group('event type:',event.type);
+                // console.log('eventCache length: ', eventCache.length);
+                // console.groupEnd();
+
+                this._removeEvent(event);
+                this._removeEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
+
+            }
         },
 
         _touchEventHandler: function (event) {
@@ -166,6 +254,21 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             this._elem.dispatchEvent(simulatedEvent);
         },
 
+        _wheelEventHandler: function(event) {
+            event.preventDefault();
+
+            var elemOffset = this._calculateElementOffset(this._elem);
+
+            this._callback({
+                type: EVENTS[event.type],
+                targetPoint: {
+                    x: event.clientX - elemOffset.x,
+                    y: event.clientY - elemOffset.y
+                },
+                scaleDirection: event.deltaY
+            });
+        },
+
         _calculateTargetPoint: function (firstTouch, secondTouch) {
             return {
                 x: (secondTouch.clientX + firstTouch.clientX) / 2,
@@ -186,6 +289,48 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 x: bounds.left,
                 y: bounds.top
             };
+        },
+
+        _pushEvent: function (event) {
+            // console.group('push pointer to eventCache list');
+            // console.log('pointerId: ', event.pointerId);
+            // console.groupEnd();
+
+            eventCache.push(event);
+        },
+
+        _removeEvent: function(event) {
+            // console.group('remove pointer from eventCache list');
+            // console.log('pointerId: ', event.pointerId);
+            // console.groupEnd();
+
+            for (var i = 0; i < eventCache.length; i++) {
+
+                if (eventCache[i].pointerId === event.pointerId) {
+
+                    eventCache.splice(i, 1);
+
+                    // console.group('eventCache');
+                    // console.log(eventCache);
+                    // console.groupEnd();
+
+                    break;
+
+                }
+
+            }
+        },
+
+        _updateEvent: function(event) {
+            eventCache = eventCache.map(function(eventCacheItem) {
+                if (eventCacheItem.pointerId = event.pointerId) {
+
+                    eventCacheItem = event;
+
+                }
+
+                return eventCacheItem;
+            });
         }
     });
 
