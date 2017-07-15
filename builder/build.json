@@ -1,7 +1,7 @@
 {
     "src": {
-        "js": "../src/**/*.js",
-        "css": "../src/**/*.css",
+        "js": "../src/js/**/*.js",
+        "css": "../src/css/**/*.css",
         "templates": "../src/**/*.ymtpl"
     },
     "dest": "../build/",

@@ -5,14 +5,16 @@ ym.modules.define('shri2017.imageViewer.View', [
     var View = function (params) {
         this._resetData();
         this._setupDOM(params);
-        this.setURL(params.url);
+        this.setURL(params);
     };
 
     Object.assign(View.prototype, {
-        setURL: function (url) {
-            this._curURL = url;
+        setURL: function (params) {
+            this._curURL = params.url;
+            this._container = params.elem;
+
             if (this._holderElem) {
-                imageLoader(url).then(this._onImageLoaded, this);
+                imageLoader(params.url).then(this._onImageLoaded, this);
             }
         },
 
@@ -58,6 +60,9 @@ ym.modules.define('shri2017.imageViewer.View', [
                     positionY: - (image.height * zoom - containerSize.height) / 2,
                     scale: zoom
                 });
+
+                // Разрешаем взаимодействие с изображением
+                this._container.classList.add('container_state_loaded');
             }
         },
 
