@@ -9,13 +9,12 @@ body {
     margin: 100px auto;
     width: 700px;
     touch-action: none;
-    pointer-events: none;
 }
 
 .container:after {
     content: '';
     position: absolute;
-    display: block;
+    display: none;
     width: 54px;
     height: 54px;
     top: 50%;
@@ -29,8 +28,12 @@ body {
     animation: loading 2s ease infinite;
 }
 
-.container_state_loaded {
-    pointer-events: auto;
+.container.container_state_loading {
+    pointer-events: none;
+}
+
+.container.container_state_loading:after {
+    display: block;
 }
 
 @-khtml-keyframes loading {

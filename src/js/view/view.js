@@ -62,7 +62,7 @@ ym.modules.define('shri2017.imageViewer.View', [
                 });
 
                 // Разрешаем взаимодействие с изображением
-                this._container.classList.add('container_state_loaded');
+                this._container.classList.remove('container_state_loading');
             }
         },
 
@@ -97,6 +97,8 @@ ym.modules.define('shri2017.imageViewer.View', [
 
             containerElem.appendChild(this._holderElem);
             params.elem.appendChild(containerElem);
+            // Показываем индикатор загрузки и запрещаем взаимодействие с изображением
+            params.elem.classList.add('container_state_loading');
         },
 
         _teardownDOM: function () {
