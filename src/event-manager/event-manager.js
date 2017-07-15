@@ -91,6 +91,9 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _pointerEventHandler: function(event) {
+            // TODO touch-action css ?
+            // TODO test on real device
+
             // Добавим событие в коллекцию и добавим обработку событий pointermove pointerup pointercancel
             if (event.type === 'pointerdown') {
 
