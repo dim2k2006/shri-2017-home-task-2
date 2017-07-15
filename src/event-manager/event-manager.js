@@ -17,11 +17,14 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
     };
 
     var EVENTMAP = {
-        start: 'mousedown',
-        move: 'mousemove',
-        end: 'mouseup',
-        cancel: 'mouseup',
-        up: 'mouseup'
+        touchstart: 'mousedown',
+        touchmove: 'mousemove',
+        touchend: 'mouseup',
+        touchcancel: 'mouseup',
+        pointerdown: 'mousedown',
+        pointermove: 'mousemove',
+        pointerup: 'mouseup',
+        pointercancel: 'mouseup'
     };
 
     var eventCache = [];
@@ -69,7 +72,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
-            // console.log(event);
+            console.log('mouse');
 
             // Такая подписка нужна в целях оптимизации производительности
             // Например, если будет 100 элементов imageViewer, то они все будут слушать событие mousemove, в случае использования метода с флагом
@@ -95,6 +98,8 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _pointerEventHandler: function(event) {
             // TODO touch-action css ?
             // TODO test on real device
+
+            console.log('pointer');
 
             // Добавим событие в коллекцию и добавим обработку событий pointermove pointerup pointercancel
             if (event.type === 'pointerdown') {
@@ -151,7 +156,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             targetPoint.y -= elemOffset.y;
 
             var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = EVENTMAP[event.type.replace('pointer', '')];
+            var simulatedType = EVENTMAP[event.type];
 
             simulatedEvent.initMouseEvent(
                 simulatedType,    // type
@@ -191,6 +196,8 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _touchEventHandler: function (event) {
+            console.log('touch');
+
             event.preventDefault();
 
             var touches = event.touches;
@@ -234,7 +241,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             targetPoint.y -= elemOffset.y;
 
             var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = EVENTMAP[event.type.replace('touch', '')];
+            var simulatedType = EVENTMAP[event.type];
 
             simulatedEvent.initMouseEvent(
                 simulatedType,    // type
