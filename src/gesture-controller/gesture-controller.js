@@ -16,6 +16,9 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
             this._eventHandler.bind(this)
         );
         this._lastEventTypes = '';
+        this._oneTouchZoomInAction = false;
+        this._prevY = 0;
+        this._initialTargetpoint = false;
     };
 
     Object.assign(Controller.prototype, {
@@ -38,6 +41,32 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
                 this._lastEventTypes = '';
                 this._processDbltab(event);
                 return;
+            }
+
+            // OneTouchZoom
+            if (this._lastEventTypes.indexOf('end') > -1) {
+
+                if (this._oneTouchZoomInAction) {
+
+                    this._oneTouchZoomInAction = false;
+
+                }
+
+                if (this._initialTargetpoint) {
+
+                    this._initialTargetpoint = false;
+
+                }
+
+            }
+
+            if (this._lastEventTypes.indexOf('start end start move') > -1 || this._oneTouchZoomInAction) {
+
+                this._lastEventTypes = '';
+                this._initialTargetpoint = this._initialTargetpoint ? this._initialTargetpoint : event.targetPoint;
+                this._processOneTouchZoom(event);
+                return;
+
             }
 
             // multi touch & drag
@@ -97,6 +126,34 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
                 event.targetPoint,
                 state.scale + OPTIONS.DBL_TAB_STEP
             );
+        },
+
+        _processOneTouchZoom: function(event) {
+            console.log('one touch zoom');
+
+            if (!this._oneTouchZoomInAction) {this._oneTouchZoomInAction = true;}
+
+            var state = this._view.getState();
+            var step = 0;
+
+            if (event.targetPoint.y > this._prevY) {
+
+                step = OPTIONS.SCALE_STEP;
+
+            } else if (event.targetPoint.y < this._prevY) {
+
+                step = OPTIONS.SCALE_STEP * (-1);
+
+            }
+
+            state.scale += step;
+
+            this._scale(
+                this._initialTargetpoint,
+                state.scale
+            );
+
+            this._prevY = event.targetPoint.y;
         },
 
         _scale: function (targetPoint, newScale) {

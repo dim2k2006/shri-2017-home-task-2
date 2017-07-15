@@ -16,7 +16,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         wheel: 'wheel'
     };
 
-    var _EVENTS = {
+    var EVENTMAP = {
         start: 'mousedown',
         move: 'mousemove',
         end: 'mouseup',
@@ -149,7 +149,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             targetPoint.y -= elemOffset.y;
 
             var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = _EVENTS[event.type.replace('pointer', '')];
+            var simulatedType = EVENTMAP[event.type.replace('pointer', '')];
 
             simulatedEvent.initMouseEvent(
                 simulatedType,    // type
@@ -231,7 +231,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             targetPoint.y -= elemOffset.y;
 
             var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = _EVENTS[event.type.replace('touch', '')];
+            var simulatedType = EVENTMAP[event.type.replace('touch', '')];
 
             simulatedEvent.initMouseEvent(
                 simulatedType,    // type
