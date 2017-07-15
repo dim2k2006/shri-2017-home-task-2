@@ -12,6 +12,13 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         wheel: 'wheel'
     };
 
+    var _EVENTS = {
+        start: 'mousedown',
+        move: 'mousemove',
+        end: 'mouseup',
+        cancel: 'mouseup'
+    };
+
     function EventManager(elem, callback) {
         this._elem = elem;
         this._callback = callback;
@@ -53,6 +60,8 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
+            console.log(event);
+
             // Такая подписка нужна в целях оптимизации производительности
             // Например, если будет 100 элементов imageViewer, то они все будут слушать событие mousemove, в случае использования метода с флагом
             if (event.type === 'mousedown') {
@@ -62,14 +71,13 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             }
 
             var elemOffset = this._calculateElementOffset(this._elem);
+            var targetPoint = event.targetPoint || {x: event.clientX - elemOffset.x, y: event.clientY - elemOffset.y};
+            var distance = event.distance || 1;
 
             this._callback({
                 type: EVENTS[event.type],
-                targetPoint: {
-                    x: event.clientX - elemOffset.x,
-                    y: event.clientY - elemOffset.y
-                },
-                distance: 1
+                targetPoint: targetPoint,
+                distance: distance
             });
         },
 
@@ -92,6 +100,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             event.preventDefault();
 
             var touches = event.touches;
+
             // touchend/touchcancel
             if (touches.length === 0) {
                 touches = event.changedTouches;
@@ -99,28 +108,109 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             var targetPoint;
             var distance = 1;
+            var screenX = 0;
+            var screenY = 0;
+            var clientX = 0;
+            var clientY = 0;
             var elemOffset = this._calculateElementOffset(this._elem);
 
             if (touches.length === 1) {
+
                 targetPoint = {
                     x: touches[0].clientX,
                     y: touches[0].clientY
                 };
+
+                screenX = touches[0].screenX;
+                screenY = touches[0].screenY;
+
+                clientX = touches[0].clientX;
+                clientY = touches[0].clientY;
+
             } else {
+
                 var firstTouch = touches[0];
                 var secondTouch = touches[1];
                 targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
                 distance = this._calculateDistance(firstTouch, secondTouch);
+
             }
 
             targetPoint.x -= elemOffset.x;
             targetPoint.y -= elemOffset.y;
 
-            this._callback({
-                type: EVENTS[event.type],
-                targetPoint: targetPoint,
-                distance: distance
-            });
+            var simulatedEvent = document.createEvent('MouseEvents');
+            var simulatedType = _EVENTS[event.type.replace('touch', '')];
+
+            simulatedEvent.initMouseEvent(
+                simulatedType,    // type
+                true,             // bubbles
+                true,             // cancelable
+                window,           // view
+                1,                // detail
+                screenX,          // screenX
+                screenY,          // screenY
+                clientX,          // clientX
+                clientY,          // clientY
+                false,            // ctrlKey
+                false,            // altKey
+                false,            // shiftKey
+                false,            // metaKey
+                0,                // button
+                null              // relatedTarget,
+            );
+
+            simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
+            simulatedEvent.distance = distance;       // custom property distance
+
+            this._elem.dispatchEvent(simulatedEvent);
+
+            // console.log('touch');
+
+            // var touches = event.touches;
+            //
+            // var newEvent = new MouseEvent(_EVENTS[event.type.replace('touch', '')], {
+            //     bubbles: true,
+            //     cancelable: true,
+            //     clientX: touches[0].clientX,
+            //     clientY: touches[0].clientY
+            // });
+
+            // console.log(newEvent);
+
+            // this._elem.dispatchEvent(newEvent);
+
+            // var touches = event.touches;
+
+            // touchend/touchcancel
+            // if (touches.length === 0) {
+            //     touches = event.changedTouches;
+            // }
+            //
+            // var targetPoint;
+            // var distance = 1;
+            // var elemOffset = this._calculateElementOffset(this._elem);
+            //
+            // if (touches.length === 1) {
+            //     targetPoint = {
+            //         x: touches[0].clientX,
+            //         y: touches[0].clientY
+            //     };
+            // } else {
+            //     var firstTouch = touches[0];
+            //     var secondTouch = touches[1];
+            //     targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
+            //     distance = this._calculateDistance(firstTouch, secondTouch);
+            // }
+            //
+            // targetPoint.x -= elemOffset.x;
+            // targetPoint.y -= elemOffset.y;
+            //
+            // this._callback({
+            //     type: EVENTS[event.type],
+            //     targetPoint: targetPoint,
+            //     distance: distance
+            // });
         },
 
         _calculateTargetPoint: function (firstTouch, secondTouch) {

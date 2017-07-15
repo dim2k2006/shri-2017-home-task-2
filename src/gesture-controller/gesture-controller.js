@@ -59,6 +59,8 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processDrag: function (event) {
+            console.log('drag');
+
             this._view.setState({
                 positionX: this._initState.positionX + (event.targetPoint.x - this._initEvent.targetPoint.x),
                 positionY: this._initState.positionY + (event.targetPoint.y - this._initEvent.targetPoint.y)
@@ -66,6 +68,8 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processWheel: function(event) {
+            console.log('wheel');
+
             var state = this._view.getState();
 
             state.scale += event.scaleDirection > 0 ? OPTIONS.SCALE_STEP : OPTIONS.SCALE_STEP * (-1);
@@ -77,6 +81,8 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processMultitouch: function (event) {
+            console.log('multi touch');
+
             this._scale(
                 event.targetPoint,
                 this._initState.scale * (event.distance / this._initEvent.distance)
@@ -84,6 +90,8 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processDbltab: function (event) {
+            console.log('double tab');
+
             var state = this._view.getState();
             this._scale(
                 event.targetPoint,
