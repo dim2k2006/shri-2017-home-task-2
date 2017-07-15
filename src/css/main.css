@@ -14,7 +14,7 @@ body {
 .container:after {
     content: '';
     position: absolute;
-    display: block;
+    display: none;
     width: 54px;
     height: 54px;
     top: 50%;
