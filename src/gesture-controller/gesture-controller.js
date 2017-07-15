@@ -60,7 +60,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
 
             }
 
-            if (this._lastEventTypes.indexOf('start end start move') > -1 || this._oneTouchZoomInAction) {
+            if (this._lastEventTypes.indexOf('start end start move') > -1 && event.isTouch || this._oneTouchZoomInAction && event.isTouch) {
 
                 this._lastEventTypes = '';
                 this._initialTargetpoint = this._initialTargetpoint ? this._initialTargetpoint : event.targetPoint;

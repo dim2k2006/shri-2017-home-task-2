@@ -82,11 +82,13 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             var elemOffset = this._calculateElementOffset(this._elem);
             var targetPoint = event.targetPoint || {x: event.clientX - elemOffset.x, y: event.clientY - elemOffset.y};
             var distance = event.distance || 1;
+            var isTouch = event.isTouch || false;
 
             this._callback({
                 type: EVENTS[event.type],
                 targetPoint: targetPoint,
-                distance: distance
+                distance: distance,
+                isTouch: isTouch
             });
         },
 
@@ -171,6 +173,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
             simulatedEvent.distance = distance;       // custom property distance
+            simulatedEvent.isTouch = event.pointerType === 'touch';        // custom property distance
 
             this._elem.dispatchEvent(simulatedEvent);
 
@@ -253,6 +256,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
             simulatedEvent.distance = distance;       // custom property distance
+            simulatedEvent.isTouch = true;            // custom property isTouch
 
             this._elem.dispatchEvent(simulatedEvent);
         },
