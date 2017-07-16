@@ -96,12 +96,8 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _pointerEventHandler: function(event) {
-            // TODO touch-action css ?
-            // TODO test on real device
+            console.log('ponter');
 
-            console.log('pointer');
-
-            // Добавим событие в коллекцию и добавим обработку событий pointermove pointerup pointercancel
             if (event.type === 'pointerdown') {
 
                 // console.group('event type:', event.type);
@@ -111,7 +107,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 this._pushEvent(event);
                 this._addEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
 
-            // Обновим коллекцию
+                // Обновим коллекцию
             } else if (event.type === 'pointermove') {
 
                 // console.group('event type:',event.type);
@@ -120,77 +116,82 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
                 this._updateEvent(event);
 
-            }
-
-            var targetPoint;
-            var distance = 1;
-            var screenX = 0;
-            var screenY = 0;
-            var clientX = 0;
-            var clientY = 0;
-            var elemOffset = this._calculateElementOffset(this._elem);
-
-            if (eventCache.length === 1) {
-
-                targetPoint = {
-                    x: eventCache[0].clientX,
-                    y: eventCache[0].clientY
-                };
-
-                screenX = eventCache[0].screenX;
-                screenY = eventCache[0].screenY;
-
-                clientX = eventCache[0].clientX;
-                clientY = eventCache[0].clientY;
-
-            } else {
-
-                var firstTouch = eventCache[0];
-                var secondTouch = eventCache[1];
-                targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
-                distance = this._calculateDistance(firstTouch, secondTouch);
-
-            }
-
-            targetPoint.x -= elemOffset.x;
-            targetPoint.y -= elemOffset.y;
-
-            var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = EVENTMAP[event.type];
-
-            simulatedEvent.initMouseEvent(
-                simulatedType,    // type
-                true,             // bubbles
-                true,             // cancelable
-                window,           // view
-                1,                // detail
-                screenX,          // screenX
-                screenY,          // screenY
-                clientX,          // clientX
-                clientY,          // clientY
-                false,            // ctrlKey
-                false,            // altKey
-                false,            // shiftKey
-                false,            // metaKey
-                0,                // button
-                null              // relatedTarget,
-            );
-
-            simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
-            simulatedEvent.distance = distance;       // custom property distance
-            simulatedEvent.isTouch = event.pointerType === 'touch';        // custom property distance
-
-            this._elem.dispatchEvent(simulatedEvent);
-
-            // Удалим событие из коллекции удалим подписку на события pointermove pointerup pointercancel
-            if (event.type === 'pointerup' || event.type === 'pointercancel') {
+            } if (event.type === 'pointerup' || event.type === 'pointercancel') {
 
                 // console.group('event type:',event.type);
                 // console.log('eventCache length: ', eventCache.length);
                 // console.groupEnd();
 
                 this._removeEvent(event);
-                this._removeEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
+
+                if (eventCache.length === 0) {
+
+                    this._removeEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
+
+                }
+            }
+
+            if (eventCache.length > 0) {
+
+                var targetPoint;
+                var distance = 1;
+                var screenX = 0;
+                var screenY = 0;
+                var clientX = 0;
+                var clientY = 0;
+                var elemOffset = this._calculateElementOffset(this._elem);
+
+                if (eventCache.length === 1) {
+
+                    targetPoint = {
+                        x: eventCache[0].clientX,
+                        y: eventCache[0].clientY
+                    };
+
+                    screenX = eventCache[0].screenX;
+                    screenY = eventCache[0].screenY;
+
+                    clientX = eventCache[0].clientX;
+                    clientY = eventCache[0].clientY;
+
+                } else {
+
+                    var firstTouch = eventCache[0];
+                    var secondTouch = eventCache[1];
+                    targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
+                    distance = this._calculateDistance(firstTouch, secondTouch);
+
+                }
+
+                targetPoint.x -= elemOffset.x;
+                targetPoint.y -= elemOffset.y;
+
+                var simulatedEvent = document.createEvent('MouseEvents');
+                var simulatedType = EVENTMAP[event.type];
+
+                simulatedEvent.initMouseEvent(
+                    simulatedType,    // type
+                    true,             // bubbles
+                    true,             // cancelable
+                    window,           // view
+                    1,                // detail
+                    screenX,          // screenX
+                    screenY,          // screenY
+                    clientX,          // clientX
+                    clientY,          // clientY
+                    false,            // ctrlKey
+                    false,            // altKey
+                    false,            // shiftKey
+                    false,            // metaKey
+                    0,                // button
+                    null              // relatedTarget,
+                );
+
+                simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
+                simulatedEvent.distance = distance;       // custom property distance
+                simulatedEvent.isTouch = event.pointerType === 'touch';        // custom property distance
+
+                this._elem.dispatchEvent(simulatedEvent);
 
             }
         },
@@ -320,6 +321,9 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             for (var i = 0; i < eventCache.length; i++) {
 
+                // console.log('eventCache[i].pointerId:', eventCache[i].pointerId);
+                // console.log('event.pointerId:', event.pointerId);
+
                 if (eventCache[i].pointerId === event.pointerId) {
 
                     eventCache.splice(i, 1);
@@ -336,15 +340,19 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _updateEvent: function(event) {
-            eventCache = eventCache.map(function(eventCacheItem) {
-                if (eventCacheItem.pointerId = event.pointerId) {
+            // console.group('update eventCache');
+            // console.log(eventCache);
+            // console.groupEnd();
 
-                    eventCacheItem = event;
+            for (var i = 0; i < eventCache.length; i++) {
+                if (eventCache[i].pointerId === event.pointerId) {
+
+                    eventCache[i] = event;
+
+                    break;
 
                 }
-
-                return eventCacheItem;
-            });
+            }
         }
     });
 
