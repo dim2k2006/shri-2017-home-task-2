@@ -65,11 +65,18 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             console.log('event router');
 
+            var type = options.type ? options.type : 'end';
+            var targetPoint = options.targetPoint ? options.targetPoint : {x: 0, y: 0};
+            var distance = options.distance ? options.distance : 1;
+            var isTouch = options.isTouch ? options.isTouch : false;
+            var scaleDirection = options.scaleDirection ? options.scaleDirection : 1;
+
             this._callback({
-                type: options.type,
-                targetPoint: options.targetPoint,
-                distance: options.distance,
-                isTouch: options.isTouch
+                type: type,
+                targetPoint: targetPoint,
+                distance: distance,
+                isTouch: isTouch,
+                scaleDirection: scaleDirection
             });
         },
 
@@ -256,14 +263,16 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             var elemOffset = this._calculateElementOffset(this._elem);
 
-            this._callback({
+            var options = {
                 type: EVENTS[event.type],
                 targetPoint: {
                     x: event.clientX - elemOffset.x,
                     y: event.clientY - elemOffset.y
                 },
                 scaleDirection: event.deltaY
-            });
+            };
+
+            this._requestTick(options);
         },
 
         _calculateTargetPoint: function (firstTouch, secondTouch) {
