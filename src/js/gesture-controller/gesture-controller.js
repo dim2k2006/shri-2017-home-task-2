@@ -160,12 +160,10 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _scale: function (targetPoint, newScale) {
-            newScale = Math.max(Math.min(newScale, 10), 0.02);
+            // Ограничение зумирования
+            newScale = Math.max(Math.min(newScale, OPTIONS.SCALE_MAX), OPTIONS.SCALE_MIN);
             var imageSize = this._view.getImageSize();
             var state = this._view.getState();
-            // Ограничение зумирования
-            newScale = Math.min(OPTIONS.SCALE_MAX, newScale);
-            newScale = Math.max(OPTIONS.SCALE_MIN, newScale);
             // Позиция прикосновения на изображении на текущем уровне масштаба
             var originX = targetPoint.x - state.positionX;
             var originY = targetPoint.y - state.positionY;
