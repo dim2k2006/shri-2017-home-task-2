@@ -38,8 +38,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
             }
             this._lastEventTypes += ' ' + event.type;
 
-            console.log(this._lastEventTypes);
-
             if (this._lastEventTypes.indexOf('start end start end') > -1) {
                 this._lastEventTypes = '';
                 this._processDbltap(event);

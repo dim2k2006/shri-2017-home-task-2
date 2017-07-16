@@ -28,6 +28,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
     };
 
     var eventCache = [];
+    var ticking = false;
 
     function EventManager(elem, callback) {
         this._elem = elem;
@@ -69,6 +70,31 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             }, this);
         },
 
+        _eventRouter: function(options) {
+            ticking = false;
+
+            console.log('event router');
+
+            this._callback({
+                type: options.type,
+                targetPoint: options.targetPoint,
+                distance: options.distance,
+                isTouch: options.isTouch
+            });
+        },
+
+        _requestTick: function(options) {
+            if(!ticking) {
+
+                requestAnimationFrame(function() {
+                    this._eventRouter(options);
+                }.bind(this));
+
+            }
+
+            ticking = true;
+        },
+
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
@@ -87,16 +113,28 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             var distance = event.distance || 1;
             var isTouch = event.isTouch || false;
 
-            this._callback({
+            var options = {
                 type: EVENTS[event.type],
                 targetPoint: targetPoint,
                 distance: distance,
                 isTouch: isTouch
-            });
+            };
+
+            this._requestTick(options);
+
+
+            // this._callback({
+            //     type: EVENTS[event.type],
+            //     targetPoint: targetPoint,
+            //     distance: distance,
+            //     isTouch: isTouch
+            // });
         },
 
         _pointerEventHandler: function(event) {
-            console.log('ponter');
+            event.preventDefault();
+
+            console.log('pointer');
 
             if (event.type === 'pointerdown') {
 
@@ -116,7 +154,78 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
                 this._updateEvent(event);
 
-            } if (event.type === 'pointerup' || event.type === 'pointercancel') {
+            }
+
+            var targetPoint;
+            var distance = 1;
+            var screenX = 0;
+            var screenY = 0;
+            var clientX = 0;
+            var clientY = 0;
+            var elemOffset = this._calculateElementOffset(this._elem);
+
+            if (eventCache.length === 1) {
+
+                targetPoint = {
+                    x: eventCache[0].clientX,
+                    y: eventCache[0].clientY
+                };
+
+                screenX = eventCache[0].screenX;
+                screenY = eventCache[0].screenY;
+
+                clientX = eventCache[0].clientX;
+                clientY = eventCache[0].clientY;
+
+            } else {
+
+                var firstTouch = eventCache[0];
+                var secondTouch = eventCache[1];
+                targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
+                distance = this._calculateDistance(firstTouch, secondTouch);
+
+            }
+
+            targetPoint.x -= elemOffset.x;
+            targetPoint.y -= elemOffset.y;
+
+            var simulatedEvent = document.createEvent('MouseEvents');
+            var simulatedType = EVENTMAP[event.type];
+
+            simulatedEvent.initMouseEvent(
+                simulatedType,    // type
+                true,             // bubbles
+                true,             // cancelable
+                window,           // view
+                1,                // detail
+                screenX,          // screenX
+                screenY,          // screenY
+                clientX,          // clientX
+                clientY,          // clientY
+                false,            // ctrlKey
+                false,            // altKey
+                false,            // shiftKey
+                false,            // metaKey
+                0,                // button
+                null              // relatedTarget,
+            );
+
+            simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
+            simulatedEvent.distance = distance;       // custom property distance
+            simulatedEvent.isTouch = event.pointerType === 'touch';        // custom property distance
+
+            // this._elem.dispatchEvent(simulatedEvent);
+
+            var options = {
+                type: EVENTS[event.type],
+                targetPoint: targetPoint,
+                distance: distance,
+                isTouch: event.pointerType === 'touch'
+            };
+
+            this._requestTick(options);
+
+            if (event.type === 'pointerup' || event.type === 'pointercancel') {
 
                 // console.group('event type:',event.type);
                 // console.log('eventCache length: ', eventCache.length);
@@ -129,70 +238,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                     this._removeEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
 
                 }
-            }
-
-            if (eventCache.length > 0) {
-
-                var targetPoint;
-                var distance = 1;
-                var screenX = 0;
-                var screenY = 0;
-                var clientX = 0;
-                var clientY = 0;
-                var elemOffset = this._calculateElementOffset(this._elem);
-
-                if (eventCache.length === 1) {
-
-                    targetPoint = {
-                        x: eventCache[0].clientX,
-                        y: eventCache[0].clientY
-                    };
-
-                    screenX = eventCache[0].screenX;
-                    screenY = eventCache[0].screenY;
-
-                    clientX = eventCache[0].clientX;
-                    clientY = eventCache[0].clientY;
-
-                } else {
-
-                    var firstTouch = eventCache[0];
-                    var secondTouch = eventCache[1];
-                    targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
-                    distance = this._calculateDistance(firstTouch, secondTouch);
-
-                }
-
-                targetPoint.x -= elemOffset.x;
-                targetPoint.y -= elemOffset.y;
-
-                var simulatedEvent = document.createEvent('MouseEvents');
-                var simulatedType = EVENTMAP[event.type];
-
-                simulatedEvent.initMouseEvent(
-                    simulatedType,    // type
-                    true,             // bubbles
-                    true,             // cancelable
-                    window,           // view
-                    1,                // detail
-                    screenX,          // screenX
-                    screenY,          // screenY
-                    clientX,          // clientX
-                    clientY,          // clientY
-                    false,            // ctrlKey
-                    false,            // altKey
-                    false,            // shiftKey
-                    false,            // metaKey
-                    0,                // button
-                    null              // relatedTarget,
-                );
-
-                simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
-                simulatedEvent.distance = distance;       // custom property distance
-                simulatedEvent.isTouch = event.pointerType === 'touch';        // custom property distance
-
-                this._elem.dispatchEvent(simulatedEvent);
-
             }
         },
 
@@ -266,7 +311,16 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             simulatedEvent.distance = distance;       // custom property distance
             simulatedEvent.isTouch = true;            // custom property isTouch
 
-            this._elem.dispatchEvent(simulatedEvent);
+            // this._elem.dispatchEvent(simulatedEvent);
+
+            var options = {
+                type: EVENTS[event.type],
+                targetPoint: targetPoint,
+                distance: distance,
+                isTouch: true
+            };
+
+            this._requestTick(options);
         },
 
         _wheelEventHandler: function(event) {
