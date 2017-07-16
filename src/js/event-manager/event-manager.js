@@ -16,17 +16,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         wheel: 'wheel'
     };
 
-    var EVENTMAP = {
-        touchstart: 'mousedown',
-        touchmove: 'mousemove',
-        touchend: 'mouseup',
-        touchcancel: 'mouseup',
-        pointerdown: 'mousedown',
-        pointermove: 'mousemove',
-        pointerup: 'mouseup',
-        pointercancel: 'mouseup'
-    };
-
     var eventCache = [];
     var ticking = false;
 
@@ -121,14 +110,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             };
 
             this._requestTick(options);
-
-
-            // this._callback({
-            //     type: EVENTS[event.type],
-            //     targetPoint: targetPoint,
-            //     distance: distance,
-            //     isTouch: isTouch
-            // });
         },
 
         _pointerEventHandler: function(event) {
@@ -188,33 +169,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             targetPoint.x -= elemOffset.x;
             targetPoint.y -= elemOffset.y;
-
-            var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = EVENTMAP[event.type];
-
-            simulatedEvent.initMouseEvent(
-                simulatedType,    // type
-                true,             // bubbles
-                true,             // cancelable
-                window,           // view
-                1,                // detail
-                screenX,          // screenX
-                screenY,          // screenY
-                clientX,          // clientX
-                clientY,          // clientY
-                false,            // ctrlKey
-                false,            // altKey
-                false,            // shiftKey
-                false,            // metaKey
-                0,                // button
-                null              // relatedTarget,
-            );
-
-            simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
-            simulatedEvent.distance = distance;       // custom property distance
-            simulatedEvent.isTouch = event.pointerType === 'touch';        // custom property distance
-
-            // this._elem.dispatchEvent(simulatedEvent);
 
             var options = {
                 type: EVENTS[event.type],
@@ -285,33 +239,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             targetPoint.x -= elemOffset.x;
             targetPoint.y -= elemOffset.y;
-
-            var simulatedEvent = document.createEvent('MouseEvents');
-            var simulatedType = EVENTMAP[event.type];
-
-            simulatedEvent.initMouseEvent(
-                simulatedType,    // type
-                true,             // bubbles
-                true,             // cancelable
-                window,           // view
-                1,                // detail
-                screenX,          // screenX
-                screenY,          // screenY
-                clientX,          // clientX
-                clientY,          // clientY
-                false,            // ctrlKey
-                false,            // altKey
-                false,            // shiftKey
-                false,            // metaKey
-                0,                // button
-                null              // relatedTarget,
-            );
-
-            simulatedEvent.targetPoint = targetPoint; // custom property targetPoint
-            simulatedEvent.distance = distance;       // custom property distance
-            simulatedEvent.isTouch = true;            // custom property isTouch
-
-            // this._elem.dispatchEvent(simulatedEvent);
 
             var options = {
                 type: EVENTS[event.type],
