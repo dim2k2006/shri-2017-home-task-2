@@ -1,6 +1,7 @@
 ym.modules.define('shri2017.imageViewer.GestureController', [
-    'shri2017.imageViewer.EventManager'
-], function (provide, EventManager) {
+    'shri2017.imageViewer.EventManager',
+    'util.extend'
+], function (provide, EventManager, extend) {
 
     var OPTIONS = {
         DBL_TAB_STEP: 0.2,
@@ -21,7 +22,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         this._initialTargetpoint = false;
     };
 
-    Object.assign(Controller.prototype, {
+    extend(Controller.prototype, {
         destroy: function () {
             this._eventManager.destroy();
         },
@@ -37,9 +38,11 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
             }
             this._lastEventTypes += ' ' + event.type;
 
+            console.log(this._lastEventTypes);
+
             if (this._lastEventTypes.indexOf('start end start end') > -1) {
                 this._lastEventTypes = '';
-                this._processDbltab(event);
+                this._processDbltap(event);
                 return;
             }
 
@@ -118,7 +121,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
             );
         },
 
-        _processDbltab: function (event) {
+        _processDbltap: function (event) {
             console.log('double tab');
 
             var state = this._view.getState();
@@ -157,6 +160,7 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _scale: function (targetPoint, newScale) {
+            newScale = Math.max(Math.min(newScale, 10), 0.02);
             var imageSize = this._view.getImageSize();
             var state = this._view.getState();
             // Ограничение зумирования
