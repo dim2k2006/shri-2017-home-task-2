@@ -32,14 +32,25 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _setupListeners: function () {
-            this._mouseListener = this._mouseEventHandler.bind(this);
-            this._pointerListener = this._pointerEventHandler.bind(this);
-            this._touchListener = this._touchEventHandler.bind(this);
             this._wheelListener = this._wheelEventHandler.bind(this);
-            this._addEventListeners('mousedown', this._elem, this._mouseListener);
-            this._addEventListeners('pointerdown', this._elem, this._pointerListener);
-            this._addEventListeners('touchstart touchmove touchend touchcancel', this._elem, this._touchListener);
             this._addEventListeners('wheel', this._elem, this._wheelListener);
+
+            if (window.PointerEvent) {
+
+                this._pointerListener = this._pointerEventHandler.bind(this);
+                this._addEventListeners('pointerdown', this._elem, this._pointerListener);
+
+            } else if (('ontouchstart' in window)) {
+
+                this._touchListener = this._touchEventHandler.bind(this);
+                this._addEventListeners('touchstart touchmove touchend touchcancel', this._elem, this._touchListener);
+
+            } else {
+
+                this._mouseListener = this._mouseEventHandler.bind(this);
+                this._addEventListeners('mousedown', this._elem, this._mouseListener);
+
+            }
         },
 
         _teardownListeners: function () {
@@ -80,18 +91,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             });
         },
 
-        _requestTick: function(options) {
-            if(!ticking) {
-
-                requestAnimationFrame(function() {
-                    this._eventRouter(options);
-                }.bind(this));
-
-            }
-
-            ticking = true;
-        },
-
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
@@ -117,7 +116,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 isTouch: isTouch
             };
 
-            this._requestTick(options);
+            this._eventRouter(options);
         },
 
         _pointerEventHandler: function(event) {
@@ -127,7 +126,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             if (event.type === 'pointerdown') {
 
-                // console.group('event type:', event.type);
+                // console.group('event type: ' + event.type);
                 // console.log('eventCache length: ', eventCache.length);
                 // console.groupEnd();
 
@@ -137,12 +136,25 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 // Обновим коллекцию
             } else if (event.type === 'pointermove') {
 
-                // console.group('event type:',event.type);
+                // console.group('event type: ' + event.type);
                 // console.log('eventCache length: ', eventCache.length);
                 // console.groupEnd();
 
                 this._updateEvent(event);
 
+            } if (event.type === 'pointerup' || event.type === 'pointercancel') {
+
+                // console.group('event type: ' + event.type);
+                // console.log('eventCache length: ', eventCache.length);
+                // console.groupEnd();
+
+                this._removeEvent(event);
+
+                if (eventCache.length === 0) {
+
+                    this._removeEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
+
+                }
             }
 
             var targetPoint;
@@ -153,23 +165,35 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             var clientY = 0;
             var elemOffset = this._calculateElementOffset(this._elem);
 
-            if (eventCache.length === 1) {
+            var currentPointers = [];
 
-                targetPoint = {
-                    x: eventCache[0].clientX,
-                    y: eventCache[0].clientY
-                };
+            if (eventCache.length > 0) {
 
-                screenX = eventCache[0].screenX;
-                screenY = eventCache[0].screenY;
-
-                clientX = eventCache[0].clientX;
-                clientY = eventCache[0].clientY;
+                currentPointers = eventCache;
 
             } else {
 
-                var firstTouch = eventCache[0];
-                var secondTouch = eventCache[1];
+                currentPointers.push(event);
+
+            }
+
+            if (currentPointers.length === 1) {
+
+                targetPoint = {
+                    x: currentPointers[0].clientX,
+                    y: currentPointers[0].clientY
+                };
+
+                screenX = currentPointers[0].screenX;
+                screenY = currentPointers[0].screenY;
+
+                clientX = currentPointers[0].clientX;
+                clientY = currentPointers[0].clientY;
+
+            } else {
+
+                var firstTouch = currentPointers[0];
+                var secondTouch = currentPointers[1];
                 targetPoint = this._calculateTargetPoint(firstTouch, secondTouch);
                 distance = this._calculateDistance(firstTouch, secondTouch);
 
@@ -185,22 +209,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 isTouch: event.pointerType === 'touch'
             };
 
-            this._requestTick(options);
-
-            if (event.type === 'pointerup' || event.type === 'pointercancel') {
-
-                // console.group('event type:',event.type);
-                // console.log('eventCache length: ', eventCache.length);
-                // console.groupEnd();
-
-                this._removeEvent(event);
-
-                if (eventCache.length === 0) {
-
-                    this._removeEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
-
-                }
-            }
+            this._eventRouter(options);
         },
 
         _touchEventHandler: function (event) {
@@ -255,7 +264,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 isTouch: true
             };
 
-            this._requestTick(options);
+            this._eventRouter(options);
         },
 
         _wheelEventHandler: function(event) {
@@ -272,7 +281,7 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                 scaleDirection: event.deltaY
             };
 
-            this._requestTick(options);
+            this._eventRouter(options);
         },
 
         _calculateTargetPoint: function (firstTouch, secondTouch) {
