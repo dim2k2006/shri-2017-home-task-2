@@ -287,22 +287,11 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _removeEvent: function(event) {
-            // console.group('remove pointer from eventCache list');
-            // console.log('pointerId: ', event.pointerId);
-            // console.groupEnd();
-
             for (var i = 0; i < eventCache.length; i++) {
-
-                // console.log('eventCache[i].pointerId:', eventCache[i].pointerId);
-                // console.log('event.pointerId:', event.pointerId);
 
                 if (eventCache[i].pointerId === event.pointerId) {
 
                     eventCache.splice(i, 1);
-
-                    // console.group('eventCache');
-                    // console.log(eventCache);
-                    // console.groupEnd();
 
                     break;
 
