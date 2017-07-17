@@ -18,7 +18,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
     };
 
     var eventCache = [];
-    var ticking = false;
 
     function EventManager(elem, callback) {
         this._elem = elem;
