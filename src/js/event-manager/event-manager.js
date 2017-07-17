@@ -191,8 +191,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _touchEventHandler: function (event) {
-            console.log('touch');
-
             event.preventDefault();
 
             var touches = event.touches;
