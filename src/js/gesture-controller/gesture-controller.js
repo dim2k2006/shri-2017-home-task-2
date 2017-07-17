@@ -114,8 +114,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processDbltap: function (event) {
-            console.log('double tab');
-
             var state = this._view.getState();
             this._scale(
                 event.targetPoint,
