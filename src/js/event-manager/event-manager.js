@@ -115,31 +115,16 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _pointerEventHandler: function(event) {
             event.preventDefault();
 
-            console.log('pointer');
-
             if (event.type === 'pointerdown') {
-
-                // console.group('event type: ' + event.type);
-                // console.log('eventCache length: ', eventCache.length);
-                // console.groupEnd();
 
                 this._pushEvent(event);
                 this._addEventListeners('pointermove pointerup pointercancel', document.documentElement, this._pointerListener);
 
-                // Обновим коллекцию
             } else if (event.type === 'pointermove') {
-
-                // console.group('event type: ' + event.type);
-                // console.log('eventCache length: ', eventCache.length);
-                // console.groupEnd();
 
                 this._updateEvent(event);
 
             } if (event.type === 'pointerup' || event.type === 'pointercancel') {
-
-                // console.group('event type: ' + event.type);
-                // console.log('eventCache length: ', eventCache.length);
-                // console.groupEnd();
 
                 this._removeEvent(event);
 
