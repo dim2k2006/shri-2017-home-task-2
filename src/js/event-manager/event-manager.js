@@ -74,10 +74,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _eventRouter: function(options) {
-            ticking = false;
-
-            console.log('event router');
-
             var type = options.type ? options.type : 'end';
             var targetPoint = options.targetPoint ? options.targetPoint : {x: 0, y: 0};
             var distance = options.distance ? options.distance : 1;
