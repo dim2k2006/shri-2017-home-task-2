@@ -283,10 +283,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _pushEvent: function (event) {
-            // console.group('push pointer to eventCache list');
-            // console.log('pointerId: ', event.pointerId);
-            // console.groupEnd();
-
             eventCache.push(event);
         },
 
