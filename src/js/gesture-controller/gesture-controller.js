@@ -122,8 +122,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processOneTouchZoom: function(event) {
-            console.log('one touch zoom');
-
             if (!this._oneTouchZoomInAction) {this._oneTouchZoomInAction = true;}
 
             var state = this._view.getState();
