@@ -301,10 +301,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         },
 
         _updateEvent: function(event) {
-            // console.group('update eventCache');
-            // console.log(eventCache);
-            // console.groupEnd();
-
             for (var i = 0; i < eventCache.length; i++) {
                 if (eventCache[i].pointerId === event.pointerId) {
 
