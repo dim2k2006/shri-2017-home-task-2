@@ -89,8 +89,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processDrag: function (event) {
-            console.log('drag');
-
             this._view.setState({
                 positionX: this._initState.positionX + (event.targetPoint.x - this._initEvent.targetPoint.x),
                 positionY: this._initState.positionY + (event.targetPoint.y - this._initEvent.targetPoint.y)
