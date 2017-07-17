@@ -92,8 +92,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
         _mouseEventHandler: function (event) {
             event.preventDefault();
 
-            console.log('mouse');
-
             // Такая подписка нужна в целях оптимизации производительности
             // Например, если будет 100 элементов imageViewer, то они все будут слушать событие mousemove, в случае использования метода с флагом
             if (event.type === 'mousedown') {
@@ -103,15 +101,12 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
             }
 
             var elemOffset = this._calculateElementOffset(this._elem);
-            var targetPoint = event.targetPoint || {x: event.clientX - elemOffset.x, y: event.clientY - elemOffset.y};
-            var distance = event.distance || 1;
-            var isTouch = event.isTouch || false;
 
             var options = {
                 type: EVENTS[event.type],
-                targetPoint: targetPoint,
-                distance: distance,
-                isTouch: isTouch
+                targetPoint: {x: event.clientX - elemOffset.x, y: event.clientY - elemOffset.y},
+                distance: 1,
+                isTouch: false
             };
 
             this._eventRouter(options);
