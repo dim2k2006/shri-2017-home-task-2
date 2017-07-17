@@ -107,8 +107,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         },
 
         _processMultitouch: function (event) {
-            console.log('multi touch');
-
             this._scale(
                 event.targetPoint,
                 this._initState.scale * (event.distance / this._initEvent.distance)
