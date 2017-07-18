@@ -137,10 +137,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             var targetPoint;
             var distance = 1;
-            var screenX = 0;
-            var screenY = 0;
-            var clientX = 0;
-            var clientY = 0;
             var elemOffset = this._calculateElementOffset(this._elem);
 
             var currentPointers = [];
@@ -161,12 +157,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                     x: currentPointers[0].clientX,
                     y: currentPointers[0].clientY
                 };
-
-                screenX = currentPointers[0].screenX;
-                screenY = currentPointers[0].screenY;
-
-                clientX = currentPointers[0].clientX;
-                clientY = currentPointers[0].clientY;
 
             } else {
 
