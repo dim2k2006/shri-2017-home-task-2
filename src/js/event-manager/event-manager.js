@@ -192,10 +192,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
 
             var targetPoint;
             var distance = 1;
-            var screenX = 0;
-            var screenY = 0;
-            var clientX = 0;
-            var clientY = 0;
             var elemOffset = this._calculateElementOffset(this._elem);
 
             if (touches.length === 1) {
@@ -204,12 +200,6 @@ ym.modules.define('shri2017.imageViewer.EventManager', [
                     x: touches[0].clientX,
                     y: touches[0].clientY
                 };
-
-                screenX = touches[0].screenX;
-                screenY = touches[0].screenY;
-
-                clientX = touches[0].clientX;
-                clientY = touches[0].clientY;
 
             } else {
 
