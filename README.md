@@ -41,3 +41,16 @@
 
 3. Необходимо придумать и реализовать поведение "OneTouchZoom" (down, up, down, move ↑↓). Изменение масштаба одним пальцем. Это поведение должно работать только с пальцами (!), не с мышкой. Изображение должно зумироваться в точку тапа.
 
+> Реализация данного жеста схожа с реализацией жеста "double tap". Для определния пальца в EventManager было добавлено свойство isTouch, которое передается в GestureController.
+
+4. Пишем на Vanilla JS. Не используем полифилы.
+
+> Полифилы в проекте не используются.
+
+5. Поддерживаемые браузеры: IE11, Edge, Chrome (+ Android Chrome), Firefox, iOS Safari, Safari.
+
+| [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/edge.png" alt="IE / Edge" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/firefox.png" alt="Firefox" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/chrome.png" alt="Chrome" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/safari.png" alt="Safari" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/opera.png" alt="Opera" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Opera | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/safari-ios.png" alt="iOS Safari" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>iOS Safari | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/chrome-android.png" alt="Chrome for Android" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome for Android |
+| --------- | --------- | --------- | --------- | --------- | --------- | --------- |
+| IE11, Edge| last 5 versions| last 5 versions| last 3 versions| last 5 versions| last 2 versions| last 2 versions
+
+> Тестировал при помощи сервиса "Browserstack". Для тестирования мультитач Pointer Events использовал библиотеку [mouseToMultiPointer](https://github.com/vsesh/mouseToMultiPointer).
