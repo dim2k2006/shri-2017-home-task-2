@@ -30,7 +30,6 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
         _eventHandler: function (event) {
             var state = this._view.getState();
 
-            // dblclick
             if (!this._lastEventTypes) {
                 setTimeout(function () {
                     this._lastEventTypes = '';
@@ -38,13 +37,14 @@ ym.modules.define('shri2017.imageViewer.GestureController', [
             }
             this._lastEventTypes += ' ' + event.type;
 
+            // dblclick
             if (this._lastEventTypes.indexOf('start end start end') > -1) {
                 this._lastEventTypes = '';
                 this._processDbltap(event);
                 return;
             }
 
-            // OneTouchZoom
+            // one touch zoom
             if (this._lastEventTypes.indexOf('end') > -1) {
 
                 if (this._oneTouchZoomInAction) {
